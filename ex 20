@@ -1,0 +1,50 @@
+using System;
+using System.Linq;
+
+class GraphIsomorphism
+{
+    static bool AreIsomorphic(int[,] g1, int[,] g2)
+    {
+        int n1 = g1.GetLength(0);
+        int n2 = g2.GetLength(0);
+        if (n1 != n2) return false;
+
+        int[] degrees1 = new int[n1];
+        int[] degrees2 = new int[n2];
+
+        for (int i = 0; i < n1; i++)
+        {
+            int deg1 = 0, deg2 = 0;
+            for (int j = 0; j < n1; j++)
+            {
+                deg1 += g1[i, j];
+                deg2 += g2[i, j];
+            }
+            degrees1[i] = deg1;
+            degrees2[i] = deg2;
+        }
+
+        Array.Sort(degrees1);
+        Array.Sort(degrees2);
+
+        return degrees1.SequenceEqual(degrees2);
+    }
+
+    static void Main()
+    {
+        int[,] graph1 = {
+            {0,1,0},
+            {1,0,1},
+            {0,1,0}
+        };
+        int[,] graph2 = {
+            {0,1,0},
+            {1,0,1},
+            {0,1,0}
+        };
+
+        Console.WriteLine(AreIsomorphic(graph1, graph2)
+            ? "Графы изоморфны"
+            : "Графы не изоморфны");
+    }
+}
