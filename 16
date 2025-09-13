@@ -1,0 +1,30 @@
+using System;
+
+class EulerNumber
+{
+    public static double ComputeE(double precision)
+    {
+        double e = 1.0;
+        double factorial = 1.0;
+        int n = 1;
+
+        while (true)
+        {
+            factorial *= n;
+            double term = 1.0 / factorial;
+            if (term < precision)
+                break;
+            e += term;
+            n++;
+        }
+        return e;
+    }
+
+    static void Main()
+    {
+        Console.Write("Введите точность (например, 1e-7): ");
+        double precision = double.Parse(Console.ReadLine());
+        double eValue = ComputeE(precision);
+        Console.WriteLine($"Число e с точностью {precision} = {eValue}");
+    }
+}
