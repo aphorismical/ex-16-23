@@ -1,0 +1,39 @@
+using System;
+using System.Collections.Generic;
+
+class PermutationsWithLimit
+{
+    static void GeneratePermutations(Dictionary<char, int> counts, List<char> current, int length)
+    {
+        if (current.Count == length)
+        {
+            Console.WriteLine(new string(current.ToArray()));
+            return;
+        }
+
+        foreach (var kvp in counts)
+        {
+            if (kvp.Value > 0)
+            {
+                counts[kvp.Key]--;
+                current.Add(kvp.Key);
+
+                GeneratePermutations(counts, current, length);
+
+                current.RemoveAt(current.Count - 1);
+                counts[kvp.Key]++;
+            }
+        }
+    }
+
+    static void Main()
+    {
+        string input = "aabc"; // пример
+        // Подсчёт частоты символов
+        var counts = new Dictionary<char, int>();
+        foreach (var ch in input)
+            counts[ch] = counts.ContainsKey(ch) ? counts[ch] + 1 : 1;
+
+        GeneratePermutations(counts, new List<char>(), input.Length);
+    }
+}
