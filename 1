@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+
+class MazeGenerator
+{
+    static int rows = 10, cols = 10;
+    static int[,] maze;
+
+    static void Main()
+    {
+        maze = new int[rows, cols];
+        GenerateMaze();
+        Console.WriteLine("Сгенерированный лабиринт:");
+        PrintMaze();
+
+        var path = FindPath();
+        if (path != null)
+        {
+            Console.WriteLine("Найден путь:");
+            foreach (var p in path)
+                Console.Write($"({p.Item1},{p.Item2}) ");
+        }
+        else
+        {
+            Console.WriteLine("Путь не найден");
+        }
+    }
+
+    static void GenerateMaze()
+    {
+        // Простая генерация: 0 - проход, 1 - стена (границы + рандом внутри)
+        Random rand = new Random();
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                maze[r, c] = (r == 0 || c == 0 || r == rows - 1 || c == cols - 1 || rand.NextDouble() < 0.3) ? 1 : 0;
+
+        // Гарантируем вход (0,0) и выход (rows-1, cols-1)
+        maze[0, 0] = 0;
+        maze[rows - 1, cols - 1] = 0;
+    }
+
+    static List<(int, int)> FindPath()
+    {
+        Queue<(int r, int c)> queue = new Queue<(int, int)>();
+        Dictionary<(int, int), (int, int)> parent = new Dictionary<(int, int), (int, int)>();
+        bool[,] visited = new bool[rows, cols];
+
+        queue.Enqueue((0, 0));
+        visited[0, 0] = true;
+
+        int[] dr = { -1, 1, 0, 0 };
+        int[] dc = { 0, 0, -1, 1 };
+
+        while (queue.Count > 0)
+        {
+            var (r, c) = queue.Dequeue();
+            if (r == rows - 1 && c == cols - 1)
+            {
+                // Восстанавливаем путь
+                var path = new List<(int, int)>();
+                var current = (r, c);
+                while (parent.ContainsKey(current))
+                {
+                    path.Add(current);
+                    current = parent[current];
+                }
+                path.Add((0, 0));
+                path.Reverse();
+                return path;
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                int nr = r + dr[i], nc = c + dc[i];
+                if (nr >= 0 && nc >= 0 && nr < rows && nc < cols && maze[nr, nc] == 0 && !visited[nr, nc])
+                {
+                    queue.Enqueue((nr, nc));
+                    visited[nr, nc] = true;
+                    parent[(nr, nc)] = (r, c);
+                }
+            }
+        }
+        return null;
+    }
+
+    static void PrintMaze()
+    {
+        for (int r = 0; r < rows; r++)
+        {
+            for (int c = 0; c < cols; c++)
+                Console.Write(maze[r, c] == 1 ? "█" : " ");
+            Console.WriteLine();
+        }
+    }
+}
