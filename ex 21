@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+
+class InMemoryDB
+{
+    static Dictionary<int, string> db = new Dictionary<int, string>();
+
+    static void Main()
+    {
+        Console.WriteLine("Команды: add <id> <value>, delete <id>, update <id> <value>, get <id>, exit");
+        while (true)
+        {
+            Console.Write("> ");
+            var input = Console.ReadLine()?.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+            if (input == null || input.Length == 0) continue;
+
+            var cmd = input[0].ToLower();
+            if (cmd == "exit") break;
+
+            try
+            {
+                switch (cmd)
+                {
+                    case "add":
+                        int addId = int.Parse(input[1]);
+                        string addVal = input.Length > 2 ? input[2] : "";
+                        if (db.ContainsKey(addId)) Console.WriteLine("Запись уже существует");
+                        else { db[addId] = addVal; Console.WriteLine("Добавлено"); }
+                        break;
+
+                    case "delete":
+                        int delId = int.Parse(input[1]);
+                        if (db.Remove(delId)) Console.WriteLine("Удалено");
+                        else Console.WriteLine("Запись не найдена");
+                        break;
+
+                    case "update":
+                        int updId = int.Parse(input[1]);
+                        string updVal = input.Length > 2 ? input[2] : "";
+                        if (db.ContainsKey(updId)) { db[updId] = updVal; Console.WriteLine("Обновлено"); }
+                        else Console.WriteLine("Запись не найдена");
+                        break;
+
+                    case "get":
+                        int getId = int.Parse(input[1]);
+                        if (db.TryGetValue(getId, out var val)) Console.WriteLine($"[{getId}] = {val}");
+                        else Console.WriteLine("Запись не найдена");
+                        break;
+
+                    default:
+                        Console.WriteLine("Неизвестная команда");
+                        break;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Ошибка обработки команды");
+            }
+        }
+    }
+}
